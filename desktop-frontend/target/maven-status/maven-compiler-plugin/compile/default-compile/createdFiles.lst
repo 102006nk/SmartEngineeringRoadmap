@@ -3,6 +3,7 @@ com\roadmap\ui\profile\ProfileView.class
 com\roadmap\ui\career\CareerView.class
 com\roadmap\ui\profile\ProfileView$1.class
 com\roadmap\ui\profile\ProfileView$3.class
+com\roadmap\ui\DashboardView.class
 com\roadmap\ui\career\CareerView$1.class
 com\roadmap\ui\profile\ProfileView$2.class
 com\roadmap\ui\login\LoginView.class

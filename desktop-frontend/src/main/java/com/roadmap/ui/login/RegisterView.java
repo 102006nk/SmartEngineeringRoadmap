@@ -1,4 +1,3 @@
-
 package com.roadmap.ui.login;
 
 import com.roadmap.service.AuthService;
@@ -8,14 +7,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class RegisterView {
 
     private final AuthService authService =
             new AuthService();
 
-    private final VBox root = new VBox(15);
+    private final StackPane root = new StackPane();
 
     public RegisterView() {
         buildUI();
@@ -23,20 +22,34 @@ public class RegisterView {
 
     private void buildUI() {
 
-        root.setPadding(new Insets(40));
-        root.setAlignment(Pos.CENTER);
+        root.setStyle(
+                "-fx-background-color: "
+                + MainApp.BG + ";");
 
-        Label title = new Label("Student Registration");
+        VBox card = new VBox(18);
+        card.setAlignment(Pos.CENTER);
+        card.setMaxWidth(420);
+        card.setPadding(new Insets(40));
 
-        title.setStyle(
-                "-fx-font-size: 24px;"
-                + "-fx-font-weight: bold;");
+        MainApp.styleRegion(card);
+
+        Label title = new Label(
+                "Create Your Account");
+
+        MainApp.styleTitle(title);
+
+        Label subtitle = new Label(
+                "Start building your engineering career.");
+
+        MainApp.styleLabel(subtitle);
 
         TextField nameField = new TextField();
         nameField.setPromptText("Full name");
+        MainApp.styleField(nameField);
 
         TextField emailField = new TextField();
-        emailField.setPromptText("Email");
+        emailField.setPromptText("Email address");
+        MainApp.styleField(emailField);
 
         PasswordField passwordField =
                 new PasswordField();
@@ -44,26 +57,33 @@ public class RegisterView {
         passwordField.setPromptText(
                 "Password (minimum 8 characters)");
 
+        MainApp.styleField(passwordField);
+
         Button registerButton =
-                new Button("Register");
+                new Button("Create Account");
+
+        MainApp.styleButton(registerButton, true);
 
         Button backButton =
                 new Button("Back to Login");
 
+        MainApp.styleButton(backButton, false);
+
         Label message = new Label();
+        MainApp.styleMessage(message);
 
         registerButton.setOnAction(event -> {
 
             try {
 
-                int userId = authService.registerStudent(
-                        nameField.getText(),
-                        emailField.getText(),
-                        passwordField.getText());
+                int userId =
+                        authService.registerStudent(
+                                nameField.getText().trim(),
+                                emailField.getText().trim(),
+                                passwordField.getText());
 
                 message.setText(
-                        "Registration successful. "
-                        + "User ID: " + userId);
+                        "Registration successful!");
 
                 MainApp.showLogin();
 
@@ -78,8 +98,9 @@ public class RegisterView {
         backButton.setOnAction(event ->
                 MainApp.showLogin());
 
-        root.getChildren().addAll(
+        card.getChildren().addAll(
                 title,
+                subtitle,
                 nameField,
                 emailField,
                 passwordField,
@@ -87,6 +108,8 @@ public class RegisterView {
                 backButton,
                 message
         );
+
+        root.getChildren().add(card);
     }
 
     public Parent getView() {

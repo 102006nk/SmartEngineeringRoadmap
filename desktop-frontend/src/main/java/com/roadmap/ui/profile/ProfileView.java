@@ -12,7 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import java.util.Map;
 
@@ -54,6 +54,7 @@ public class ProfileView {
         Map<Integer, String> loadedSemesters;
 
         try {
+
             loadedBranches =
                     new BranchDAO().getAllBranches();
 
@@ -61,6 +62,7 @@ public class ProfileView {
                     new SemesterDAO().getAllSemesters();
 
         } catch (Exception e) {
+
             throw new RuntimeException(
                     "Unable to load branches/semesters: "
                     + e.getMessage(), e);
@@ -75,93 +77,142 @@ public class ProfileView {
 
     private void buildUI() {
 
-        root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(30));
+        root.setStyle(
+                "-fx-background-color: "
+                + MainApp.BG + ";");
 
-        Label title = new Label("Student Profile");
+        VBox card = new VBox(16);
+        card.setMaxWidth(650);
+        card.setPadding(new Insets(30));
 
-        branchCombo.setPromptText("Select Branch");
+        MainApp.styleRegion(card);
+
+        Label title = new Label(
+                "Complete Your Profile");
+
+        MainApp.styleTitle(title);
+
+        Label subtitle = new Label(
+                "Tell us about your academic journey.");
+
+        MainApp.styleLabel(subtitle);
+
+        branchCombo.setPromptText(
+                "Select Branch");
+
         branchCombo.getItems().addAll(
                 branches.keySet());
 
-        branchCombo.setCellFactory(list -> new ListCell<>() {
+        branchCombo.setCellFactory(list ->
+                new ListCell<Integer>() {
             @Override
-            protected void updateItem(Integer id, boolean empty) {
+            protected void updateItem(
+                    Integer id, boolean empty) {
+
                 super.updateItem(id, empty);
 
-                if (empty || id == null) {
-                    setText(null);
-                } else {
-                    setText(branches.get(id));
-                }
+                setText(empty || id == null
+                        ? null
+                        : branches.get(id));
             }
         });
 
-        branchCombo.setButtonCell(new ListCell<>() {
+        branchCombo.setButtonCell(
+                new ListCell<Integer>() {
             @Override
-            protected void updateItem(Integer id, boolean empty) {
+            protected void updateItem(
+                    Integer id, boolean empty) {
+
                 super.updateItem(id, empty);
 
-                if (empty || id == null) {
-                    setText(null);
-                } else {
-                    setText(branches.get(id));
-                }
+                setText(empty || id == null
+                        ? null
+                        : branches.get(id));
             }
         });
 
-        semesterCombo.setPromptText("Select Semester");
+        semesterCombo.setPromptText(
+                "Select Semester");
+
         semesterCombo.getItems().addAll(
                 semesters.keySet());
 
-        semesterCombo.setCellFactory(list -> new ListCell<>() {
+        semesterCombo.setCellFactory(list ->
+                new ListCell<Integer>() {
             @Override
-            protected void updateItem(Integer id, boolean empty) {
+            protected void updateItem(
+                    Integer id, boolean empty) {
+
                 super.updateItem(id, empty);
 
-                if (empty || id == null) {
-                    setText(null);
-                } else {
-                    setText(semesters.get(id));
-                }
+                setText(empty || id == null
+                        ? null
+                        : semesters.get(id));
             }
         });
 
-        semesterCombo.setButtonCell(new ListCell<>() {
+        semesterCombo.setButtonCell(
+                new ListCell<Integer>() {
             @Override
-            protected void updateItem(Integer id, boolean empty) {
+            protected void updateItem(
+                    Integer id, boolean empty) {
+
                 super.updateItem(id, empty);
 
-                if (empty || id == null) {
-                    setText(null);
-                } else {
-                    setText(semesters.get(id));
-                }
+                setText(empty || id == null
+                        ? null
+                        : semesters.get(id));
             }
         });
 
-        interestsField.setPromptText("Interests");
-        existingSkillsField.setPromptText("Existing skills");
-        careerGoalField.setPromptText("Career goal");
-        studyHoursField.setPromptText("Daily study hours");
+        styleCombo(branchCombo);
+        styleCombo(semesterCombo);
 
-        Button saveButton = new Button("Save Profile");
+        interestsField.setPromptText(
+                "Your interests (e.g. AI, Web Development)");
+
+        existingSkillsField.setPromptText(
+                "Existing skills (e.g. Java, SQL)");
+
+        careerGoalField.setPromptText(
+                "Career goal (e.g. Software Engineer)");
+
+        studyHoursField.setPromptText(
+                "Daily study hours");
+
+        MainApp.styleField(interestsField);
+        MainApp.styleField(existingSkillsField);
+        MainApp.styleField(careerGoalField);
+        MainApp.styleField(studyHoursField);
+
+        Button saveButton =
+                new Button("Save Profile");
+
+        MainApp.styleButton(saveButton, true);
 
         Button careerButton =
                 new Button("Explore Careers");
 
-        saveButton.setOnAction(event -> saveProfile());
+        MainApp.styleButton(careerButton, false);
+
+        MainApp.styleMessage(message);
+
+        saveButton.setOnAction(event ->
+                saveProfile());
 
         careerButton.setOnAction(event -> {
 
             MainApp.setScene(
-                    new javafx.scene.Scene(
+                    MainApp.createScene(
                             new CareerView().getView(),
-                            800, 600));
+                            1000, 750));
         });
 
-        root.getChildren().addAll(
+        card.getChildren().addAll(
                 title,
+                subtitle,
                 branchCombo,
                 semesterCombo,
                 interestsField,
@@ -172,6 +223,23 @@ public class ProfileView {
                 careerButton,
                 message
         );
+
+        root.getChildren().add(card);
+    }
+
+    private void styleCombo(
+            ComboBox<Integer> combo) {
+
+        combo.setMaxWidth(Double.MAX_VALUE);
+        combo.setMinHeight(45);
+
+        combo.setStyle(
+                "-fx-background-color: #1E293B;"
+                + "-fx-background-radius: 10;"
+                + "-fx-border-color: #334155;"
+                + "-fx-border-radius: 10;"
+                + "-fx-text-fill: white;"
+                + "-fx-padding: 5;");
     }
 
     private void loadExistingProfile() {
@@ -182,8 +250,10 @@ public class ProfileView {
                     profileService.getCurrentProfile();
 
             if (existingProfile == null) {
+
                 message.setText(
                         "Create your profile.");
+
                 return;
             }
 
@@ -204,7 +274,8 @@ public class ProfileView {
 
             studyHoursField.setText(
                     String.valueOf(
-                            existingProfile.getDailyStudyHours()));
+                            existingProfile
+                            .getDailyStudyHours()));
 
             message.setText(
                     "Existing profile loaded.");
@@ -232,6 +303,7 @@ public class ProfileView {
 
                 message.setText(
                         "Select branch and semester.");
+
                 return;
             }
 
@@ -242,7 +314,8 @@ public class ProfileView {
                     new StudentProfile(
                             existingProfile == null
                                     ? 0
-                                    : existingProfile.getProfileId(),
+                                    : existingProfile
+                                    .getProfileId(),
 
                             0,
                             branchId,
@@ -256,25 +329,28 @@ public class ProfileView {
             if (existingProfile == null) {
 
                 int profileId =
-                        profileService.saveProfile(profile);
+                        profileService.saveProfile(
+                                profile);
 
                 message.setText(
                         "Profile saved. ID: "
                         + profileId);
 
                 existingProfile =
-                        profileService.getCurrentProfile();
+                        profileService
+                        .getCurrentProfile();
 
             } else {
 
                 boolean updated =
-                        profileService.updateCurrentProfile(
+                        profileService
+                        .updateCurrentProfile(
                                 profile);
 
                 message.setText(
                         updated
-                                ? "Profile updated successfully."
-                                : "Profile update failed.");
+                        ? "Profile updated successfully."
+                        : "Profile update failed.");
             }
 
         } catch (NumberFormatException e) {
@@ -290,6 +366,18 @@ public class ProfileView {
     }
 
     public Parent getView() {
-        return root;
-    }
+
+    ScrollPane scrollPane = new ScrollPane(root);
+
+    scrollPane.setFitToWidth(true);
+    scrollPane.setFitToHeight(false);
+    scrollPane.setPannable(true);
+
+    scrollPane.setStyle(
+            "-fx-background: #0B1120;"
+            + "-fx-background-color: #0B1120;"
+            + "-fx-border-color: transparent;");
+
+    return scrollPane;
+}
 }

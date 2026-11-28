@@ -1,4 +1,3 @@
-
 package com.roadmap.ui.login;
 
 import com.roadmap.model.User;
@@ -10,14 +9,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class LoginView {
 
     private final AuthService authService =
             new AuthService();
 
-    private final VBox root = new VBox(15);
+    private final StackPane root = new StackPane();
 
     public LoginView() {
         buildUI();
@@ -25,50 +24,75 @@ public class LoginView {
 
     private void buildUI() {
 
-        root.setPadding(new Insets(40));
-        root.setAlignment(Pos.CENTER);
+        root.setStyle(
+                "-fx-background-color: "
+                + MainApp.BG + ";");
+
+        VBox card = new VBox(18);
+        card.setAlignment(Pos.CENTER);
+        card.setMaxWidth(400);
+        card.setPadding(new Insets(40));
+
+        MainApp.styleRegion(card);
+
+        Label logo = new Label("S");
+        logo.setStyle(
+                "-fx-background-color: #6366F1;"
+                + "-fx-text-fill: white;"
+                + "-fx-font-size: 28px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-background-radius: 16;"
+                + "-fx-padding: 14 22;");
 
         Label title = new Label(
                 "Smart Engineering Roadmap");
 
-        title.setStyle(
-                "-fx-font-size: 24px;"
-                + "-fx-font-weight: bold;");
+        MainApp.styleTitle(title);
+        title.setWrapText(true);
+        title.setAlignment(Pos.CENTER);
 
-        TextField emailField =
-                new TextField();
+        Label subtitle = new Label(
+                "Build your future, one skill at a time.");
 
-        emailField.setPromptText("Email");
+        MainApp.styleLabel(subtitle);
+
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email address");
+        MainApp.styleField(emailField);
 
         PasswordField passwordField =
                 new PasswordField();
 
         passwordField.setPromptText("Password");
+        MainApp.styleField(passwordField);
 
         Button loginButton =
-                new Button("Login");
+                new Button("Sign In");
+
+        MainApp.styleButton(loginButton, true);
 
         Button registerButton =
                 new Button("Create Account");
 
+        MainApp.styleButton(registerButton, false);
+
         Label message = new Label();
+        MainApp.styleMessage(message);
 
         loginButton.setOnAction(event -> {
 
             try {
 
                 User user = authService.login(
-                        emailField.getText(),
+                        emailField.getText().trim(),
                         passwordField.getText());
 
                 if (user != null) {
 
-                    message.setText("Login successful!");
-
                     MainApp.setScene(
-                            new javafx.scene.Scene(
+                            MainApp.createScene(
                                     new ProfileView().getView(),
-                                    700, 600));
+                                    900, 700));
 
                 } else {
 
@@ -79,26 +103,31 @@ public class LoginView {
             } catch (Exception e) {
 
                 message.setText(
-                        "Login failed: " + e.getMessage());
+                        "Login failed: "
+                        + e.getMessage());
             }
         });
 
         registerButton.setOnAction(event -> {
 
             MainApp.setScene(
-                    new javafx.scene.Scene(
+                    MainApp.createScene(
                             new RegisterView().getView(),
-                            600, 500));
+                            900, 650));
         });
 
-        root.getChildren().addAll(
+        card.getChildren().addAll(
+                logo,
                 title,
+                subtitle,
                 emailField,
                 passwordField,
                 loginButton,
                 registerButton,
                 message
         );
+
+        root.getChildren().add(card);
     }
 
     public Parent getView() {

@@ -20,6 +20,11 @@ public class RoadmapView {
 
     private final VBox root = new VBox(15);
 
+    private final VBox itemContainer =
+            new VBox(12);
+
+    private final Label message = new Label();
+
     public RoadmapView(String careerName) {
         this.careerName = careerName;
         buildUI();
@@ -35,11 +40,6 @@ public class RoadmapView {
         Button generateButton =
                 new Button("Generate Roadmap");
 
-        ListView<String> roadmapList =
-                new ListView<>();
-
-        Label message = new Label();
-
         generateButton.setOnAction(event -> {
 
             try {
@@ -48,31 +48,16 @@ public class RoadmapView {
                         roadmapService.generateRoadmap(
                                 careerName);
 
-                List<RoadmapItem> items =
-                        roadmapService.getRoadmapItems(
-                                roadmapId);
-
-                roadmapList.getItems().clear();
-
-                for (RoadmapItem item : items) {
-
-                    roadmapList.getItems().add(
-                            item.getSequenceOrder()
-                            + ". "
-                            + item.getItemTitle()
-                            + " ["
-                            + item.getStatus()
-                            + "]");
-                }
-
                 message.setText(
-                        "Roadmap generated successfully. "
-                        + "ID: " + roadmapId);
+                        "Roadmap generated. ID: "
+                        + roadmapId);
+
+                loadItems(roadmapId);
 
             } catch (Exception e) {
 
                 message.setText(
-                        "Roadmap generation failed: "
+                        "Generation failed: "
                         + e.getMessage());
             }
         });
@@ -80,9 +65,92 @@ public class RoadmapView {
         root.getChildren().addAll(
                 title,
                 generateButton,
-                roadmapList,
-                message
+                message,
+                itemContainer
         );
+    }
+
+    private void loadItems(int roadmapId) {
+
+        try {
+
+            itemContainer.getChildren().clear();
+
+            List<RoadmapItem> items =
+                    roadmapService.getRoadmapItems(
+                            roadmapId);
+
+            for (RoadmapItem item : items) {
+
+                VBox card = new VBox(8);
+
+                card.setPadding(
+                        new Insets(12));
+
+                Label itemTitle = new Label(
+                        item.getSequenceOrder()
+                        + ". "
+                        + item.getItemTitle());
+
+                Label description = new Label(
+                        item.getItemDescription());
+
+                description.setWrapText(true);
+
+                Label date = new Label(
+                        "Target date: "
+                        + item.getTargetDate());
+
+                ComboBox<String> statusCombo =
+                        new ComboBox<>();
+
+                statusCombo.getItems().addAll(
+                        "PENDING",
+                        "IN_PROGRESS",
+                        "COMPLETED");
+
+                statusCombo.setValue(
+                        item.getStatus());
+
+                statusCombo.setOnAction(event -> {
+
+                    try {
+
+                        boolean updated =
+                                roadmapService.updateItemStatus(
+                                        item.getItemId(),
+                                        statusCombo.getValue());
+
+                        message.setText(
+                                updated
+                                        ? "Status updated."
+                                        : "Status update failed.");
+
+                    } catch (Exception e) {
+
+                        message.setText(
+                                "Update error: "
+                                + e.getMessage());
+                    }
+                });
+
+                card.getChildren().addAll(
+                        itemTitle,
+                        description,
+                        date,
+                        new Label("Status:"),
+                        statusCombo
+                );
+
+                itemContainer.getChildren().add(card);
+            }
+
+        } catch (Exception e) {
+
+            message.setText(
+                    "Loading error: "
+                    + e.getMessage());
+        }
     }
 
     public Parent getView() {

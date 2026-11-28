@@ -14,12 +14,12 @@ public class DBConnection {
 
     private static final String USER = System.getenv().getOrDefault(
             "MYSQL_USER",
-            "root"
+            "roadmap_app"
     );
 
     private static final String PASSWORD = System.getenv().getOrDefault(
             "MYSQL_PASSWORD",
-            ""
+            "Roadmap@123"
     );
 
     public static Connection getConnection() throws SQLException {
